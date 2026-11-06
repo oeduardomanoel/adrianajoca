@@ -10,6 +10,8 @@ const url = useSiteUrl()
 const { href, track } = useBooking()
 const others = treatments.filter(x => x.slug !== t.slug)
 const path = `/tratamentos/${t.slug}`
+// Evita repetir a mesma foto no topo e na seção "depois da sessão"
+const afterImg = t.image === '/img/adriana-sorriso.webp' ? '/img/adriana-perfil-luz.webp' : '/img/adriana-sorriso.webp'
 
 useSeoMeta({
   title: t.seoTitle,
@@ -123,7 +125,7 @@ useHead({
     <section class="section tp-after">
       <div class="wrap tp-split">
         <div class="frame tp-after-img" v-reveal="'clip'">
-          <img src="/img/adriana-sorriso.webp" alt="Adriana Joca sorrindo em sua sala de atendimento" width="558" height="692" loading="lazy">
+          <img :src="afterImg" alt="Adriana Joca em sua sala de atendimento" width="558" height="692" loading="lazy">
         </div>
         <div>
           <p class="eyebrow" v-reveal>Depois da sessão</p>
@@ -156,7 +158,7 @@ useHead({
         <p class="eyebrow" v-reveal>Veja também</p>
         <div class="more-grid">
           <NuxtLink v-for="(o, i) in others" :key="o.slug" :to="`/tratamentos/${o.slug}`" class="more-card" v-reveal="{ delay: i * 70 }">
-            <div class="frame more-img"><img :src="o.image" :alt="o.imageAlt" loading="lazy" width="300" height="375"></div>
+            <div class="frame more-img"><TreatmentVisual :treatment="o" :index="i" /></div>
             <span class="more-cat">{{ o.category }}</span>
             <span class="more-name">{{ o.name }} <AppIcon name="arrow-up-right" /></span>
           </NuxtLink>
@@ -262,7 +264,11 @@ useHead({
 }
 .more-card { display: grid; gap: 0.6rem; }
 .more-img { aspect-ratio: 4 / 5; }
-.more-card:hover .more-img img { transform: scale(1.07); }
+.more-img :deep(img), .more-img :deep(.tv-card) { transition: transform 1.2s var(--ease); }
+.more-card:hover .more-img :deep(img), .more-card:hover .more-img :deep(.tv-card) { transform: scale(1.06); }
+.more-img :deep(.tv-name) { font-size: 1.7rem; }
+.more-img :deep(.tv-initial) { font-size: 11rem; }
+.more-img :deep(.tv-cat) { display: none; }
 .more-cat { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--clay-deep); margin-top: 0.4rem; }
 .more-name { display: flex; align-items: center; gap: 0.4rem; font-family: var(--serif); font-size: 1.5rem; color: var(--espresso); line-height: 1.1; }
 .more-name svg { width: 16px; height: 16px; opacity: 0; transform: translate(-6px, 6px); transition: all 0.5s var(--ease); }

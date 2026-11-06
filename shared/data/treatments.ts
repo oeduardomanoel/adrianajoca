@@ -4,8 +4,14 @@ export interface Treatment {
   category: 'Facial' | 'Corporal'
   /** Frase curta usada na lista da home */
   line: string
+  /** Foto principal da página do tratamento (pode ser um retrato da Adriana) */
   image: string
   imageAlt: string
+  /**
+   * Foto real DESTE procedimento. Usada no hover da lista e nas miniaturas.
+   * Se não houver, o site mostra um card tipográfico no lugar (nunca uma foto de outro procedimento).
+   */
+  photo?: string
   seoTitle: string
   seoDescription: string
   /** Parágrafos de abertura da página */
@@ -25,6 +31,7 @@ export const treatments: Treatment[] = [
     category: 'Facial',
     line: 'Cravos fora, poros respirando e a pele com aquele aspecto de descansada.',
     image: '/img/limpeza-de-pele.webp',
+    photo: '/img/limpeza-de-pele.webp',
     imageAlt: 'Paciente deitada recebendo limpeza de pele com algodão no nariz',
     seoTitle: 'Limpeza de pele profunda em Joinville',
     seoDescription: 'Limpeza de pele com biomédica esteta no Glória, em Joinville. Extração cuidadosa de cravos, controle de oleosidade e pele com mais viço. Agende sua avaliação.',
@@ -64,6 +71,7 @@ export const treatments: Treatment[] = [
     category: 'Facial',
     line: 'Para marcas de acne, textura irregular e poros que incomodam.',
     image: '/img/microagulhamento.webp',
+    photo: '/img/microagulhamento.webp',
     imageAlt: 'Adriana Joca realizando microagulhamento facial com caneta dermapen',
     seoTitle: 'Microagulhamento em Joinville para cicatriz de acne e textura',
     seoDescription: 'Microagulhamento com biomédica esteta em Joinville. Indicado para cicatrizes de acne, poros dilatados, linhas finas e textura irregular. Protocolo definido após avaliação.',
@@ -102,8 +110,8 @@ export const treatments: Treatment[] = [
     name: 'Jato de plasma',
     category: 'Facial',
     line: 'Pálpebra caída e ruguinhas finas tratadas sem bisturi.',
-    image: '/img/procedimento-facial.webp',
-    imageAlt: 'Procedimento facial sendo realizado com a paciente deitada e touca descartável',
+    image: '/img/atendimento-lupa.webp',
+    imageAlt: 'Adriana Joca atendendo uma paciente sob a luz da lupa',
     seoTitle: 'Jato de plasma em Joinville para pálpebras e rugas finas',
     seoDescription: 'Jato de plasma com biomédica esteta em Joinville. Tratamento sem cortes para excesso de pele nas pálpebras, rugas finas e linhas ao redor da boca e dos olhos.',
     intro: [
@@ -139,8 +147,8 @@ export const treatments: Treatment[] = [
     name: 'Lábios',
     category: 'Facial',
     line: 'Hidratação e viço para lábios ressecados ou sem cor.',
-    image: '/img/dermapen.webp',
-    imageAlt: 'Mãos com luvas segurando caneta de microagulhamento rosé',
+    image: '/img/adriana-sorriso.webp',
+    imageAlt: 'Adriana Joca sorrindo em sua sala de atendimento',
     seoTitle: 'Tratamento para lábios em Joinville: hidratação e revitalização',
     seoDescription: 'Cuidado para lábios ressecados, sem viço ou com contorno apagado, com biomédica esteta em Joinville. Protocolo indicado após avaliação.',
     intro: [
@@ -176,7 +184,7 @@ export const treatments: Treatment[] = [
     category: 'Corporal',
     line: 'Menos inchaço, menos peso nas pernas e uma hora só sua.',
     image: '/img/adriana-acenando.webp',
-    imageAlt: 'Adriana Joca em sala de atendimento com luz natural',
+    imageAlt: 'Adriana Joca em sua sala de atendimento com luz natural',
     seoTitle: 'Drenagem linfática em Joinville',
     seoDescription: 'Drenagem linfática manual com biomédica esteta no Glória, em Joinville. Ajuda a reduzir inchaço e retenção de líquido, com sensação de leveza. Agende.',
     intro: [
@@ -211,6 +219,7 @@ export const treatments: Treatment[] = [
     category: 'Corporal',
     line: 'Circulação ativada e apoio no tratamento de celulite e gordura localizada.',
     image: '/img/ventosas.webp',
+    photo: '/img/ventosas.webp',
     imageAlt: 'Copos de ventosaterapia organizados sobre a maca',
     seoTitle: 'Ventosaterapia estética em Joinville',
     seoDescription: 'Ventosaterapia estética com biomédica esteta em Joinville. Estimula a circulação e auxilia no tratamento de celulite e gordura localizada. Agende sua avaliação.',

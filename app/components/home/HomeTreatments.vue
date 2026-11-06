@@ -5,29 +5,51 @@ import { treatments } from '#shared/data/treatments'
 const active = ref<number | null>(null)
 const preview = ref<HTMLElement | null>(null)
 let x = 0, y = 0, cx = 0, cy = 0, raf = 0
+let finePointer = false
+// Faixa horizontal permitida para a prévia: entre o fim do nome e a seta, sem cobrir o nome.
+let minX = 0, maxX = Infinity
+const PREVIEW_W = 260
+
+function bounds(row: HTMLElement) {
+  const line = row.querySelector('.t-line')?.getBoundingClientRect()
+  const arrow = row.querySelector('.t-arrow')?.getBoundingClientRect()
+  if (!line || !arrow) return
+  minX = line.left - 24
+  maxX = Math.max(minX, arrow.left - PREVIEW_W - 32)
+}
+const targetX = () => Math.min(maxX, Math.max(minX, x + 32))
 
 function onMove(e: MouseEvent) {
   x = e.clientX
   y = e.clientY
 }
+// O loop só roda enquanto o mouse está sobre a lista.
 function loop() {
-  cx += (x - cx) * 0.14
+  const tx = targetX()
+  cx += (tx - cx) * 0.14
   cy += (y - cy) * 0.14
   if (preview.value) {
-    const tilt = Math.max(-8, Math.min(8, (x - cx) * 0.08))
-    preview.value.style.transform = `translate3d(${cx}px, ${cy}px, 0) translate(32px, -55%) rotate(${tilt}deg)`
+    const tilt = Math.max(-5, Math.min(5, (tx - cx) * 0.05))
+    preview.value.style.transform = `translate3d(${cx}px, ${cy}px, 0) translateY(-50%) rotate(${tilt}deg)`
   }
-  raf = requestAnimationFrame(loop)
+  raf = active.value === null ? 0 : requestAnimationFrame(loop)
 }
 function enter(i: number, e: MouseEvent) {
-  if (active.value === null) { cx = e.clientX; cy = e.clientY }
+  if (!finePointer) return
+  bounds(e.currentTarget as HTMLElement)
+  x = e.clientX
+  y = e.clientY
+  if (active.value === null) {
+    cx = targetX()
+    cy = y
+  }
   active.value = i
+  if (!raf) raf = requestAnimationFrame(loop)
 }
 
 onMounted(() => {
-  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
-  window.addEventListener('mousemove', onMove, { passive: true })
-  raf = requestAnimationFrame(loop)
+  finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+  if (finePointer) window.addEventListener('mousemove', onMove, { passive: true })
 })
 onBeforeUnmount(() => {
   if (import.meta.client) {
@@ -61,7 +83,7 @@ onBeforeUnmount(() => {
             @mouseenter="enter(i, $event)"
           >
             <span class="t-num">{{ String(i + 1).padStart(2, '0') }}</span>
-            <span class="t-thumb"><img :src="t.image" :alt="t.imageAlt" width="120" height="150" loading="lazy"></span>
+            <span class="t-thumb"><TreatmentVisual :treatment="t" :index="i" size="sm" /></span>
             <span class="t-name">{{ t.name }}</span>
             <span class="t-line">{{ t.line }}</span>
             <span class="t-cat">{{ t.category }}</span>
@@ -72,10 +94,9 @@ onBeforeUnmount(() => {
     </div>
 
     <div ref="preview" class="t-preview" :class="{ 'is-on': active !== null }" aria-hidden="true">
-      <img
-        v-for="(t, i) in treatments" :key="t.slug" :src="t.image" alt=""
-        :class="{ 'is-active': active === i }" loading="lazy"
-      >
+      <div v-for="(t, i) in treatments" :key="t.slug" class="t-preview-item" :class="{ 'is-active': active === i }">
+        <TreatmentVisual :treatment="t" :index="i" />
+      </div>
     </div>
   </section>
 </template>
@@ -156,6 +177,7 @@ onBeforeUnmount(() => {
   z-index: 50;
   width: 260px;
   aspect-ratio: 4 / 5;
+  transform-origin: 50% 50%;
   pointer-events: none;
   border-radius: 16px;
   overflow: hidden;
@@ -165,16 +187,14 @@ onBeforeUnmount(() => {
   box-shadow: 0 40px 70px -30px rgba(42, 32, 26, 0.55);
 }
 .t-preview.is-on { opacity: 1; scale: 1; }
-.t-preview img {
+.t-preview-item {
   position: absolute;
   inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
   opacity: 0;
-  transform: scale(1.15);
+  transform: scale(1.12);
   transition: opacity 0.45s var(--ease), transform 0.8s var(--ease);
 }
-.t-preview img.is-active { opacity: 1; transform: none; }
+.t-preview-item.is-active { opacity: 1; transform: none; }
 
 @media (hover: none), (pointer: coarse) {
   .t-preview { display: none; }
@@ -201,7 +221,7 @@ onBeforeUnmount(() => {
     overflow: hidden;
     background: var(--sand);
   }
-  .t-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .t-thumb :deep(img) { width: 100%; height: 100%; object-fit: cover; }
   .t-name { font-size: 1.75rem; }
   .t-line { font-size: 0.92rem; line-height: 1.5; }
   .t-cat { margin-top: 0.3rem; font-size: 0.62rem; }
