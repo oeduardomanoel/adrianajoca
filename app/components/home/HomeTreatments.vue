@@ -1,62 +1,5 @@
 <script setup lang="ts">
 import { treatments } from '#shared/data/treatments'
-
-// Prévia da foto que acompanha o cursor (só em telas com mouse).
-const active = ref<number | null>(null)
-const preview = ref<HTMLElement | null>(null)
-let x = 0, y = 0, cx = 0, cy = 0, raf = 0
-let finePointer = false
-// Faixa horizontal permitida para a prévia: entre o fim do nome e a seta, sem cobrir o nome.
-let minX = 0, maxX = Infinity
-const PREVIEW_W = 260
-
-function bounds(row: HTMLElement) {
-  const line = row.querySelector('.t-line')?.getBoundingClientRect()
-  const arrow = row.querySelector('.t-arrow')?.getBoundingClientRect()
-  if (!line || !arrow) return
-  minX = line.left - 24
-  maxX = Math.max(minX, arrow.left - PREVIEW_W - 32)
-}
-const targetX = () => Math.min(maxX, Math.max(minX, x + 32))
-
-function onMove(e: MouseEvent) {
-  x = e.clientX
-  y = e.clientY
-}
-// O loop só roda enquanto o mouse está sobre a lista.
-function loop() {
-  const tx = targetX()
-  cx += (tx - cx) * 0.14
-  cy += (y - cy) * 0.14
-  if (preview.value) {
-    const tilt = Math.max(-5, Math.min(5, (tx - cx) * 0.05))
-    preview.value.style.transform = `translate3d(${cx}px, ${cy}px, 0) translateY(-50%) rotate(${tilt}deg)`
-  }
-  raf = active.value === null ? 0 : requestAnimationFrame(loop)
-}
-function enter(i: number, e: MouseEvent) {
-  if (!finePointer) return
-  bounds(e.currentTarget as HTMLElement)
-  x = e.clientX
-  y = e.clientY
-  if (active.value === null) {
-    cx = targetX()
-    cy = y
-  }
-  active.value = i
-  if (!raf) raf = requestAnimationFrame(loop)
-}
-
-onMounted(() => {
-  finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
-  if (finePointer) window.addEventListener('mousemove', onMove, { passive: true })
-})
-onBeforeUnmount(() => {
-  if (import.meta.client) {
-    window.removeEventListener('mousemove', onMove)
-    cancelAnimationFrame(raf)
-  }
-})
 </script>
 
 <template>
@@ -76,27 +19,20 @@ onBeforeUnmount(() => {
         </p>
       </header>
 
-      <ol class="t-list" @mouseleave="active = null">
+      <ol class="t-list">
         <li v-for="(t, i) in treatments" :key="t.slug" v-reveal="{ delay: i * 70 }">
-          <NuxtLink
-            :to="`/tratamentos/${t.slug}`" class="t-row" :class="{ 'is-dim': active !== null && active !== i }"
-            @mouseenter="enter(i, $event)"
-          >
+          <NuxtLink :to="`/tratamentos/${t.slug}`" class="t-row">
             <span class="t-num">{{ String(i + 1).padStart(2, '0') }}</span>
-            <span class="t-thumb"><TreatmentVisual :treatment="t" :index="i" size="sm" /></span>
             <span class="t-name">{{ t.name }}</span>
             <span class="t-line">{{ t.line }}</span>
-            <span class="t-cat">{{ t.category }}</span>
+            <span class="t-meta" aria-hidden="true">
+              <span class="t-cat">{{ t.category }}</span>
+              <span class="t-cta">Ver tratamento</span>
+            </span>
             <span class="t-arrow"><AppIcon name="arrow-up-right" /></span>
           </NuxtLink>
         </li>
       </ol>
-    </div>
-
-    <div ref="preview" class="t-preview" :class="{ 'is-on': active !== null }" aria-hidden="true">
-      <div v-for="(t, i) in treatments" :key="t.slug" class="t-preview-item" :class="{ 'is-active': active === i }">
-        <TreatmentVisual :treatment="t" :index="i" />
-      </div>
     </div>
   </section>
 </template>
@@ -110,54 +46,105 @@ onBeforeUnmount(() => {
   margin-bottom: clamp(3rem, 6vw, 5rem);
 }
 .t-head .h2 { margin-top: 1.2rem; }
+
 .t-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+
 .t-row {
   position: relative;
   display: grid;
-  grid-template-columns: 3.5rem 1.3fr 1.6fr 6rem 3rem;
-  grid-template-areas: 'num name line cat arrow';
+  grid-template-columns: 3.5rem 1.25fr 1.5fr 9rem 3rem;
+  grid-template-areas: 'num name line meta arrow';
   align-items: center;
   gap: 1.5rem;
-  padding: clamp(1.4rem, 3vw, 2.2rem) 0;
+  padding: clamp(1.5rem, 3vw, 2.3rem) 0;
   border-bottom: 1px solid var(--line);
   isolation: isolate;
-  transition: opacity 0.5s var(--ease), padding 0.6s var(--ease);
+  transition: opacity 0.6s var(--ease);
 }
+
+/* Fundo areia que sobe de baixo, como uma cortina */
 .t-row::before {
   content: '';
   position: absolute;
-  inset: 0 calc(var(--gutter) * -0.5);
-  background: var(--ivory);
-  border-radius: 14px;
-  transform: scaleY(0.6);
-  opacity: 0;
-  transition: transform 0.6s var(--ease), opacity 0.4s;
+  inset: -1px calc(var(--gutter) * -0.5);
   z-index: -1;
+  background: var(--sand);
+  border-radius: 14px;
+  clip-path: inset(100% 0 0 0 round 14px);
+  transition: clip-path 0.75s var(--ease);
 }
-.t-row:hover::before { transform: none; opacity: 1; }
-.t-row.is-dim { opacity: 0.35; }
-.t-num { grid-area: num; font-size: 0.8rem; letter-spacing: 0.1em; color: var(--clay); }
-.t-thumb { display: none; }
+
+/* Linha fina que cresce sob o nome */
+.t-name::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -0.35rem;
+  width: 100%;
+  height: 1px;
+  background: var(--clay);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.8s var(--ease) 0.08s;
+}
+
+.t-num {
+  grid-area: num;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: var(--clay);
+  transition: transform 0.6s var(--ease);
+}
 .t-name {
+  position: relative;
   grid-area: name;
+  justify-self: start;
   font-family: var(--serif);
   font-size: clamp(1.9rem, 3.6vw, 3.1rem);
   line-height: 1;
   color: var(--espresso);
-  transition: transform 0.6s var(--ease), color 0.4s;
+  transition: transform 0.7s var(--ease), color 0.5s;
 }
-.t-row:hover .t-name { transform: translateX(0.6rem); color: var(--clay-deep); font-style: italic; }
-.t-line { grid-area: line; color: var(--muted); font-size: 0.98rem; max-width: 30em; }
+.t-line {
+  grid-area: line;
+  color: var(--muted);
+  font-size: 0.98rem;
+  max-width: 30em;
+  transition: color 0.5s, transform 0.7s var(--ease);
+}
+
+/* Categoria sai, "Ver tratamento" entra no mesmo lugar */
+.t-meta {
+  grid-area: meta;
+  justify-self: end;
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  height: 1.9rem;
+}
+.t-cat, .t-cta {
+  grid-area: 1 / 1;
+  align-self: center;
+  justify-self: end;
+  white-space: nowrap;
+  transition: transform 0.6s var(--ease), opacity 0.4s;
+}
 .t-cat {
-  grid-area: cat;
-  justify-self: start;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   padding: 0.35rem 0.75rem;
   border-radius: 999px;
   box-shadow: inset 0 0 0 1px var(--line-strong);
 }
+.t-cta {
+  font-size: 0.88rem;
+  font-weight: 450;
+  color: var(--espresso);
+  transform: translateY(110%);
+  opacity: 0;
+}
+
 .t-arrow {
   grid-area: arrow;
   justify-self: end;
@@ -166,65 +153,48 @@ onBeforeUnmount(() => {
   display: grid;
   place-items: center;
   box-shadow: inset 0 0 0 1px var(--line-strong);
-  transition: background 0.4s, color 0.4s, transform 0.6s var(--ease);
+  transition: background 0.45s, color 0.45s, box-shadow 0.45s, transform 0.7s var(--ease);
 }
 .t-arrow svg { width: 18px; height: 18px; }
-.t-row:hover .t-arrow { background: var(--espresso); color: var(--ivory); transform: rotate(45deg); }
 
-.t-preview {
-  position: fixed;
-  top: 0; left: 0;
-  z-index: 50;
-  width: 260px;
-  aspect-ratio: 4 / 5;
-  transform-origin: 50% 50%;
-  pointer-events: none;
-  border-radius: 16px;
-  overflow: hidden;
-  opacity: 0;
-  scale: 0.6;
-  transition: opacity 0.4s var(--ease), scale 0.6s var(--ease);
-  box-shadow: 0 40px 70px -30px rgba(42, 32, 26, 0.55);
+/* ---- Estados de hover e foco ---- */
+@media (hover: hover) {
+  .t-list:has(.t-row:hover) .t-row:not(:hover) { opacity: 0.42; }
 }
-.t-preview.is-on { opacity: 1; scale: 1; }
-.t-preview-item {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transform: scale(1.12);
-  transition: opacity 0.45s var(--ease), transform 0.8s var(--ease);
+.t-row:hover::before, .t-row:focus-visible::before { clip-path: inset(0 0 0 0 round 14px); }
+.t-row:hover .t-name, .t-row:focus-visible .t-name { transform: translateX(0.8rem); color: var(--clay-deep); }
+.t-row:hover .t-name::after, .t-row:focus-visible .t-name::after { transform: scaleX(1); }
+.t-row:hover .t-num, .t-row:focus-visible .t-num { transform: translateX(0.3rem); }
+.t-row:hover .t-line, .t-row:focus-visible .t-line { color: var(--ink); transform: translateX(0.4rem); }
+.t-row:hover .t-cat, .t-row:focus-visible .t-cat { transform: translateY(-110%); opacity: 0; }
+.t-row:hover .t-cta, .t-row:focus-visible .t-cta { transform: none; opacity: 1; }
+.t-row:hover .t-arrow, .t-row:focus-visible .t-arrow {
+  background: var(--espresso);
+  color: var(--ivory);
+  box-shadow: none;
+  transform: rotate(45deg);
 }
-.t-preview-item.is-active { opacity: 1; transform: none; }
-
-@media (hover: none), (pointer: coarse) {
-  .t-preview { display: none; }
-}
+.t-row:focus-visible { outline: none; }
 
 @media (max-width: 900px) {
   .t-head { grid-template-columns: 1fr; }
   .t-row {
-    grid-template-columns: 84px 1fr 2.6rem;
+    grid-template-columns: 2.2rem 1fr 2.6rem;
     grid-template-areas:
-      'thumb name arrow'
-      'thumb line line'
-      'thumb cat cat';
-    gap: 0.4rem 1rem;
+      'num name arrow'
+      '. line line'
+      '. meta meta';
+    gap: 0.5rem 0.8rem;
     align-items: start;
+    padding: 1.5rem 0;
   }
-  .t-num { display: none; }
-  .t-thumb {
-    grid-area: thumb;
-    display: block;
-    width: 84px;
-    aspect-ratio: 4 / 5;
-    border-radius: 10px;
-    overflow: hidden;
-    background: var(--sand);
-  }
-  .t-thumb :deep(img) { width: 100%; height: 100%; object-fit: cover; }
-  .t-name { font-size: 1.75rem; }
-  .t-line { font-size: 0.92rem; line-height: 1.5; }
-  .t-cat { margin-top: 0.3rem; font-size: 0.62rem; }
+  .t-num { padding-top: 0.55rem; }
+  .t-name { font-size: 1.85rem; }
+  .t-line { font-size: 0.93rem; line-height: 1.5; }
+  .t-meta { justify-self: start; margin-top: 0.2rem; }
+  .t-cat, .t-cta { justify-self: start; }
+  .t-cat { font-size: 0.6rem; }
   .t-arrow { width: 38px; height: 38px; }
+  .t-row:active::before { clip-path: inset(0 0 0 0 round 14px); }
 }
 </style>
