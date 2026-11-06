@@ -24,11 +24,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <a href="#conteudo" class="skip-link">Pular para o conteúdo</a>
-  <SiteHeader />
-  <main id="conteudo">
+  <NuxtLayout>
     <NuxtPage />
-  </main>
-  <SiteFooter />
-  <BookingFloat />
+  </NuxtLayout>
 </template>

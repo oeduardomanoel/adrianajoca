@@ -39,6 +39,12 @@ A seção de depoimentos só aparece quando houver avaliações reais em `site.r
 - [ ] Revisar com a Adriana o texto de **Lábios** e **Ventosaterapia** (confirmar quais protocolos ela faz)
 - [ ] Colar 3 a 6 avaliações reais do Google em `site.reviews`
 
+## Link da bio do Instagram
+
+`/links` é a página de links para a bio, no estilo Linktree, com a mesma identidade do site. `/bio` redireciona para ela.
+
+Para medir quem vem do Instagram, use na bio: `https://SEU-DOMINIO/links?utm_source=instagram&utm_medium=bio`
+
 ## SEO e GEO
 
 - Meta tags, Open Graph e canonical em todas as páginas

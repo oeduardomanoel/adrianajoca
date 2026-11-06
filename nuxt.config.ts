@@ -54,13 +54,15 @@ export default defineNuxtConfig({
 
   routeRules: {
     '/**': { prerender: true },
+    // Atalho para a bio do Instagram
+    '/bio': { redirect: { to: '/links', statusCode: 301 } },
     '/img/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
   },
 
   nitro: {
     prerender: {
       crawlLinks: true,
-      routes: ['/', '/sitemap.xml', '/robots.txt', '/llms.txt', '/llms-full.txt'],
+      routes: ['/', '/links', '/sitemap.xml', '/robots.txt', '/llms.txt', '/llms-full.txt'],
     },
   },
 
