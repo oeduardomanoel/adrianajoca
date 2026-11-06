@@ -1,67 +1,63 @@
 <script setup lang="ts">
 import { treatments } from '#shared/data/treatments'
-
-// A faixa inclina levemente conforme a velocidade do scroll.
-const track = ref<HTMLElement | null>(null)
-onMounted(() => {
-  if (prefersReducedMotion()) return
-  let last = window.scrollY
-  let skew = 0
-  onScrollFrame(() => {
-    const y = window.scrollY
-    const v = Math.max(-12, Math.min(12, (y - last) * 0.25))
-    last = y
-    skew += (v - skew) * 0.3
-    if (track.value) track.value.style.transform = `skewX(${(-skew * 0.4).toFixed(2)}deg)`
-  })
-})
 </script>
 
 <template>
-  <div class="marquee" aria-hidden="true">
-    <div ref="track" class="marquee-skew">
-      <div class="marquee-row">
-        <template v-for="n in 2" :key="n">
-          <span v-for="t in treatments" :key="`${n}-${t.slug}`" class="marquee-item">
-            {{ t.name }}<i>✦</i>
-          </span>
-        </template>
-      </div>
-    </div>
-  </div>
+  <nav class="strip" aria-label="Tratamentos">
+    <ul class="wrap strip-list">
+      <li v-for="(t, i) in treatments" :key="t.slug" v-reveal="{ type: 'fade', delay: i * 80 }">
+        <NuxtLink :to="`/tratamentos/${t.slug}`" class="strip-link">{{ t.name }}</NuxtLink>
+      </li>
+    </ul>
+  </nav>
 </template>
 
 <style scoped>
-.marquee {
-  overflow: hidden;
-  padding: 1.6rem 0;
+.strip {
   border-block: 1px solid var(--line);
   background: var(--ivory);
 }
-.marquee-skew { transition: transform 0.3s ease-out; }
-.marquee-row {
+.strip-list {
+  list-style: none;
+  margin-block: 0;
   display: flex;
-  width: max-content;
-  animation: slide 38s linear infinite;
-}
-.marquee:hover .marquee-row { animation-play-state: paused; }
-.marquee-item {
-  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
+  gap: 0.6rem 0;
+  padding-block: 1.6rem;
+}
+.strip-list li { display: flex; align-items: center; }
+.strip-list li + li::before {
+  content: '';
+  width: 4px; height: 4px;
+  margin-inline: clamp(1rem, 2.4vw, 2rem);
+  border-radius: 50%;
+  background: var(--clay);
+  opacity: 0.6;
+}
+.strip-link {
+  position: relative;
   font-family: var(--serif);
   font-style: italic;
-  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
   color: var(--espresso);
-  white-space: nowrap;
-  padding-right: 2.2rem;
+  transition: color 0.4s;
 }
-.marquee-item i {
-  font-style: normal;
-  font-size: 0.45em;
-  color: var(--clay);
-  padding-left: 2.2rem;
+.strip-link::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0.05em;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.6s var(--ease);
 }
-@keyframes slide {
-  to { transform: translateX(-50%); }
+.strip-link:is(:hover, :focus-visible) { color: var(--clay-deep); }
+.strip-link:is(:hover, :focus-visible)::after { transform: scaleX(1); transform-origin: left; }
+@media (max-width: 640px) {
+  .strip-list { gap: 0.4rem 0; padding-block: 1.3rem; }
+  .strip-list li + li::before { margin-inline: 0.75rem; }
 }
 </style>

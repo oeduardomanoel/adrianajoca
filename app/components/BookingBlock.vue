@@ -36,12 +36,19 @@ const mapOn = ref(false)
           </label>
         </fieldset>
 
+        <div v-if="hasWhatsapp" class="preview" v-reveal="{ delay: 200 }">
+          <span class="preview-label">Sua mensagem</span>
+          <Transition name="msg" mode="out-in">
+            <p :key="message" class="preview-text">“{{ message }}”</p>
+          </Transition>
+        </div>
+
         <div class="booking-cta" v-reveal="{ delay: 250 }">
           <a :href="href(message)" target="_blank" rel="noopener" class="btn btn--light btn-big" @click="track(`agendar:${chosen || 'geral'}`)">
             <AppIcon :name="hasWhatsapp ? 'whatsapp' : 'instagram'" class="btn-icon" />
             Chamar no {{ channel }}
           </a>
-          <p v-if="hasWhatsapp" class="booking-note">A mensagem já vai escrita. É só enviar.</p>
+          <p v-if="hasWhatsapp" class="booking-note">Ela já vai escrita. É só enviar.</p>
           <p v-else class="booking-note">Você cai direto na conversa com a Adriana.</p>
         </div>
       </div>
@@ -103,6 +110,32 @@ const mapOn = ref(false)
 .chip:hover { box-shadow: inset 0 0 0 1px var(--rose); color: var(--ivory); transform: translateY(-2px); }
 .chip.is-on { background: var(--rose); color: var(--espresso); box-shadow: none; }
 .chip:has(input:focus-visible) { outline: 2px solid var(--rose); outline-offset: 3px; }
+
+.preview {
+  margin: -0.6rem 0 2.2rem;
+  padding-left: 1.2rem;
+  border-left: 1px solid rgba(217, 183, 164, 0.45);
+  max-width: 34rem;
+}
+.preview-label {
+  display: block;
+  font-size: 0.66rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(251, 248, 243, 0.5);
+  margin-bottom: 0.45rem;
+}
+.preview-text {
+  margin: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.2rem;
+  line-height: 1.4;
+  color: var(--rose);
+}
+.msg-enter-active, .msg-leave-active { transition: opacity 0.25s ease, transform 0.35s var(--ease); }
+.msg-enter-from { opacity: 0; transform: translateY(6px); }
+.msg-leave-to { opacity: 0; transform: translateY(-4px); }
 
 .booking-cta { display: flex; align-items: center; gap: 1.4rem; flex-wrap: wrap; }
 .btn-big { padding: 1.2rem 2rem; font-size: 1rem; }

@@ -58,6 +58,7 @@ import { site } from '#shared/data/site'
 </template>
 
 <style scoped>
+.about { padding-top: clamp(4rem, 8vw, 7rem); }
 .about-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -87,7 +88,7 @@ import { site } from '#shared/data/site'
 }
 .about-polaroid--a { width: 36%; left: -4%; bottom: 0; rotate: -5deg; }
 .about-polaroid--b { width: 34%; right: 6%; bottom: -2rem; rotate: 4deg; }
-.about-polaroid:hover { transform: translateY(-10px) rotate(2deg); z-index: 2; }
+.about-polaroid:hover { transform: translateY(-4px); box-shadow: 0 24px 40px -26px rgba(42, 32, 26, 0.45); z-index: 2; }
 
 .about-copy .h2 { margin: 1.2rem 0 2rem; }
 .about-text { color: var(--muted); font-size: 1.08rem; max-width: 34em; }
@@ -104,7 +105,8 @@ import { site } from '#shared/data/site'
 .about-facts dd { margin: 0.4rem 0 0; font-family: var(--serif); font-size: 1.45rem; color: var(--espresso); }
 
 @media (max-width: 900px) {
-  .about-grid { grid-template-columns: 1fr; }
+  .about { padding-top: clamp(4rem, 8vw, 7rem); }
+.about-grid { grid-template-columns: 1fr; }
   .about-media { order: 2; max-width: 520px; }
   .about-facts { grid-template-columns: 1fr 1fr; }
 }

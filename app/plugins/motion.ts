@@ -18,7 +18,7 @@ function observer() {
   io = new IntersectionObserver((entries) => {
     for (const e of entries) {
       if (!e.isIntersecting) continue
-      targets.get(e.target)?.forEach(el => el.classList.add('is-in'))
+      targets.get(e.target)?.forEach(el => el.setAttribute('data-in', ''))
       targets.delete(e.target)
       io!.unobserve(e.target)
     }
@@ -49,7 +49,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       else el.setAttribute('data-reveal', type)
       if (delay) el.style.setProperty('--d', `${delay}ms`)
       if (!('IntersectionObserver' in window) || prefersReducedMotion()) {
-        el.classList.add('is-in')
+        el.setAttribute('data-in', '')
         return
       }
       watch(el, type)
@@ -68,12 +68,15 @@ export default defineNuxtPlugin((nuxtApp) => {
     mounted(el, binding) {
       if (prefersReducedMotion()) return
       const speed = binding.value ?? 0.12
+      // Mede o pai (que não se move) e usa a propriedade `translate`,
+      // que soma com `transform`/`scale` em vez de sobrescrever as animações de entrada.
+      const ref = el.parentElement ?? el
       const off = onScrollFrame(() => {
-        const r = el.getBoundingClientRect()
+        const r = ref.getBoundingClientRect()
         const vh = window.innerHeight
         if (r.bottom < -200 || r.top > vh + 200) return
         const center = r.top + r.height / 2 - vh / 2
-        el.style.transform = `translate3d(0, ${(-center * speed).toFixed(1)}px, 0)`
+        el.style.translate = `0 ${(-center * speed).toFixed(1)}px`
       })
       offs.set(el, off)
     },

@@ -45,9 +45,9 @@ const fill = computed(() => Math.min(1, Math.max(0, (progress.value - 0.25) / 0.
       </div>
 
       <ol ref="list" class="steps" :style="{ '--fill': fill }">
-        <li v-for="(s, i) in steps" :key="s.title" class="step" :class="{ 'is-lit': fill * steps.length > i + 0.15 }" v-reveal>
-          <span class="step-dot">{{ i + 1 }}</span>
-          <div>
+        <li v-for="(s, i) in steps" :key="s.title" class="step" :data-lit="fill * steps.length > i + 0.15 ? '' : undefined">
+          <span class="step-dot"><span class="step-n">{{ i + 1 }}</span></span>
+          <div v-reveal>
             <h3 class="step-title">{{ s.title }}</h3>
             <p class="step-text">{{ s.text }}</p>
           </div>
@@ -86,6 +86,7 @@ const fill = computed(() => Math.min(1, Math.max(0, (progress.value - 0.25) / 0.
   background: var(--clay-deep);
   transform-origin: top;
   transform: scaleY(var(--fill, 0));
+  transition: transform 0.25s linear;
 }
 .step { position: relative; display: grid; grid-template-columns: 56px 1fr; gap: 1.8rem; }
 .step-dot {
@@ -95,19 +96,27 @@ const fill = computed(() => Math.min(1, Math.max(0, (progress.value - 0.25) / 0.
   border-radius: 50%;
   display: grid;
   place-items: center;
+  overflow: hidden;
   font-family: var(--serif);
   font-size: 1.5rem;
   background: var(--sand);
-  color: var(--muted);
+  color: var(--clay-deep);
   box-shadow: inset 0 0 0 1px var(--line-strong);
-  transition: background 0.6s var(--ease), color 0.6s, box-shadow 0.6s, transform 0.6s var(--ease);
+  isolation: isolate;
 }
-.step.is-lit .step-dot {
+/* Preenchimento que sobe de baixo, no mesmo ritmo da linha de progresso */
+.step-dot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   background: var(--espresso);
-  color: var(--ivory);
-  box-shadow: none;
-  transform: scale(1.06);
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 0.8s var(--ease-in-out);
 }
+.step-n { transition: color 0.5s var(--ease-in-out) 0.15s; }
+.step[data-lit] .step-dot::before { clip-path: inset(0 0 0 0); }
+.step[data-lit] .step-n { color: var(--ivory); }
 .step-title { font-size: var(--fs-h3); margin: 0.6rem 0 0.8rem; }
 .step-text { color: var(--muted); max-width: 32em; margin: 0; }
 

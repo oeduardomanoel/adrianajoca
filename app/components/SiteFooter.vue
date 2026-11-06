@@ -3,22 +3,13 @@ import { site, instagramUrl, fullAddress } from '#shared/data/site'
 import { treatments } from '#shared/data/treatments'
 
 const { href, track, channel } = useBooking()
+// O CTA grande fica no bloco de agendamento logo acima; o rodapé só organiza os links.
 const year = new Date().getFullYear()
 </script>
 
 <template>
   <footer class="footer">
     <div class="wrap">
-      <div class="footer-top">
-        <p class="footer-big serif" v-reveal="'lines'">
-          <span class="split-line"><span>Sua pele merece</span></span>
-          <span class="split-line"><span style="--d: 120ms"><em>alguém olhando de perto.</em></span></span>
-        </p>
-        <a :href="href()" target="_blank" rel="noopener" class="btn btn--light" @click="track('footer')">
-          Falar com a Adriana <AppIcon name="arrow" class="btn-icon" />
-        </a>
-      </div>
-
       <div class="footer-grid">
         <div>
           <BrandMark class="footer-brand" />
@@ -62,35 +53,18 @@ const year = new Date().getFullYear()
 .footer {
   background: var(--night);
   color: rgba(251, 248, 243, 0.72);
-  padding: clamp(5rem, 10vw, 8rem) 0 7rem;
+  padding: 0 0 3rem;
+  border-top: 1px solid rgba(251, 248, 243, 0.1);
   position: relative;
   overflow: hidden;
 }
 .footer :deep(.brand-name) { color: var(--ivory); }
 .footer :deep(.brand-sub) { color: rgba(251, 248, 243, 0.5); }
-.footer-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 2rem;
-  flex-wrap: wrap;
-  padding-bottom: clamp(3rem, 7vw, 5rem);
-  border-bottom: 1px solid rgba(251, 248, 243, 0.12);
-}
-.footer-big {
-  font-family: var(--serif);
-  font-size: clamp(2.6rem, 6.5vw, 5.6rem);
-  line-height: 1;
-  color: var(--ivory);
-  margin: 0;
-  letter-spacing: -0.02em;
-}
-.footer-big em { color: var(--rose); }
 .footer-grid {
   display: grid;
   grid-template-columns: 1.4fr 1fr 1fr;
   gap: 3rem;
-  padding-block: 3.5rem;
+  padding-block: 4rem 3.5rem;
 }
 .footer-text { margin-top: 1.4rem; font-size: 0.95rem; line-height: 1.8; }
 .footer-title {
@@ -115,6 +89,7 @@ const year = new Date().getFullYear()
 }
 .footer-bottom p { margin: 0; }
 @media (max-width: 800px) {
+  .footer { padding-bottom: 6.5rem; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .footer-grid > :first-child { grid-column: 1 / -1; }
 }

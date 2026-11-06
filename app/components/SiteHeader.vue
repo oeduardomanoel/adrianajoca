@@ -141,7 +141,7 @@ watch(open, (v) => {
   color: var(--espresso);
   transition: transform 0.7s var(--ease) calc(var(--i) * 60ms), opacity 0.7s var(--ease) calc(var(--i) * 60ms);
 }
-.menu-num { font-family: var(--sans); font-size: 0.75rem; color: var(--clay); letter-spacing: 0.1em; }
+.menu-num { font-family: var(--sans); font-size: 0.75rem; color: var(--clay-deep); letter-spacing: 0.1em; }
 .menu-btn { margin-top: 2rem; align-self: flex-start; }
 .menu-enter-active, .menu-leave-active { transition: opacity 0.4s var(--ease); }
 .menu-enter-from, .menu-leave-to { opacity: 0; }

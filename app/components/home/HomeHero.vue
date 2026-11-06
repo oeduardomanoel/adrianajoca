@@ -2,14 +2,6 @@
 import { site } from '#shared/data/site'
 
 const { href, track } = useBooking()
-const badge = ref<SVGElement | null>(null)
-
-onMounted(() => {
-  if (prefersReducedMotion()) return
-  onScrollFrame(() => {
-    if (badge.value) badge.value.style.transform = `rotate(${window.scrollY * 0.12}deg)`
-  })
-})
 </script>
 
 <template>
@@ -60,7 +52,7 @@ onMounted(() => {
         </div>
 
         <div class="hero-badge" v-reveal="{ type: 'fade', delay: 900 }">
-          <svg ref="badge" viewBox="0 0 200 200" class="hero-badge-ring" aria-hidden="true">
+          <svg viewBox="0 0 200 200" class="hero-badge-ring" aria-hidden="true">
             <defs><path id="circ" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" /></defs>
             <text><textPath href="#circ">Biomédica esteta · {{ site.council }} · Joinville ·</textPath></text>
           </svg>
@@ -79,8 +71,8 @@ onMounted(() => {
 .hero {
   position: relative;
   min-height: 100svh;
-  padding-top: clamp(7rem, 14vh, 9.5rem);
-  padding-bottom: 5rem;
+  padding-top: clamp(6.5rem, 12vh, 8rem);
+  padding-bottom: 4rem;
   display: flex;
   align-items: center;
   background:
@@ -97,16 +89,19 @@ onMounted(() => {
 .hero-title {
   font-size: var(--fs-hero);
   line-height: 0.95;
-  margin: 1.6rem 0 2rem;
+  margin: 1.4rem 0 1.8rem;
   letter-spacing: -0.03em;
 }
-.hero-lead { margin-bottom: 2.4rem; }
+@media (min-width: 901px) {
+  .hero-title .split-line { white-space: nowrap; }
+}
+.hero-lead { margin-bottom: 2rem; }
 .hero-actions { display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; }
 .hero-proof {
   display: flex;
   align-items: center;
   gap: 0.9rem;
-  margin-top: 3rem;
+  margin-top: 2.4rem;
   font-size: 0.86rem;
   line-height: 1.5;
   color: var(--muted);
@@ -138,8 +133,8 @@ onMounted(() => {
 .hero-badge {
   position: absolute;
   top: 6%;
-  right: -2.2rem;
-  width: 132px; height: 132px;
+  right: -1.8rem;
+  width: 108px; height: 108px;
   display: grid;
   place-items: center;
 }
@@ -148,13 +143,13 @@ onMounted(() => {
   inset: 0;
   width: 100%; height: 100%;
   font-family: var(--sans);
-  font-size: 13.5px;
+  font-size: 13px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   fill: var(--espresso);
 }
 .hero-badge-core {
-  width: 64px; height: 64px;
+  width: 52px; height: 52px;
   border-radius: 50%;
   background: var(--espresso);
   color: var(--ivory);
@@ -162,7 +157,7 @@ onMounted(() => {
   place-items: center;
   font-family: var(--serif);
   font-style: italic;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
 }
 .hero-scroll {
   position: absolute;
@@ -188,8 +183,8 @@ onMounted(() => {
   .hero { min-height: auto; padding-top: 7.5rem; }
   .hero-grid { grid-template-columns: 1fr; }
   .hero-visual { max-width: 420px; width: 88%; margin: 1rem auto 0; padding: 0 0 2.5rem 2rem; }
-  .hero-badge { right: -1.2rem; width: 104px; height: 104px; }
-  .hero-badge-core { width: 50px; height: 50px; font-size: 1.2rem; }
+  .hero-badge { right: -1rem; width: 92px; height: 92px; }
+  .hero-badge-core { width: 44px; height: 44px; font-size: 1.1rem; }
   .hero-scroll { display: none; }
 }
 </style>

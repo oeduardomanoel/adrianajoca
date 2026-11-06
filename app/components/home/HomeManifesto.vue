@@ -9,24 +9,22 @@ const progress = useSectionProgress(el)
 const ready = ref(false)
 onMounted(() => { ready.value = !prefersReducedMotion() })
 
-function opacity(i: number) {
-  if (!ready.value) return 1
-  // começa a acender quando a seção entra e termina antes do meio da tela
-  const p = (progress.value - 0.18) / 0.42
-  const lit = p * words.length
-  return Math.min(1, Math.max(0.16, lit - i + 1))
-}
+// Uma única variável CSS (--lit) controla todas as palavras; o Vue não re-renderiza cada span.
+// Começa a acender quando a seção entra e termina antes do meio da tela.
+const lit = computed(() => ready.value
+  ? ((progress.value - 0.18) / 0.42) * words.length
+  : words.length + 1)
 </script>
 
 <template>
   <section id="manifesto" ref="el" class="section manifesto">
     <div class="wrap manifesto-in">
       <p class="eyebrow" v-reveal>O jeito de trabalhar</p>
-      <p class="manifesto-text">
+      <p class="manifesto-text" :style="{ '--lit': lit.toFixed(2) }">
         <span
           v-for="(w, i) in words" :key="i" class="w"
           :class="{ 'w--accent': accent.has(w) }"
-          :style="{ opacity: opacity(i) }"
+          :style="{ '--i': i }"
         >{{ `${w} ` }}</span>
       </p>
     </div>
@@ -43,7 +41,10 @@ function opacity(i: number) {
   letter-spacing: -0.015em;
   color: var(--espresso);
 }
-.w { transition: opacity 0.25s linear; }
+.w {
+  opacity: clamp(0.16, calc(var(--lit) - var(--i) + 1), 1);
+  transition: opacity 0.25s linear;
+}
 .w--accent { font-style: italic; color: var(--clay-deep); }
 @media (prefers-reduced-motion: reduce) {
   .w { opacity: 1 !important; }

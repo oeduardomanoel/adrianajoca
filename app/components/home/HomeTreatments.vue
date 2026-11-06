@@ -92,7 +92,7 @@ import { treatments } from '#shared/data/treatments'
   grid-area: num;
   font-size: 0.8rem;
   letter-spacing: 0.1em;
-  color: var(--clay);
+  color: var(--clay-deep);
   transition: transform 0.6s var(--ease);
 }
 .t-name {
@@ -159,8 +159,9 @@ import { treatments } from '#shared/data/treatments'
 
 /* ---- Estados de hover e foco ---- */
 @media (hover: hover) {
-  .t-list:has(.t-row:hover) .t-row:not(:hover) { opacity: 0.42; }
+  .t-list:has(.t-row:hover) .t-row:not(:hover) :is(.t-name, .t-line) { opacity: 0.5; }
 }
+.t-name, .t-line { transition: opacity 0.5s var(--ease), transform 0.7s var(--ease), color 0.5s; }
 .t-row:hover::before, .t-row:focus-visible::before { clip-path: inset(0 0 0 0 round 14px); }
 .t-row:hover .t-name, .t-row:focus-visible .t-name { transform: translateX(0.8rem); color: var(--clay-deep); }
 .t-row:hover .t-name::after, .t-row:focus-visible .t-name::after { transform: scaleX(1); }

@@ -4,7 +4,7 @@ import { site, instagramUrl } from '#shared/data/site'
 const items = [
   { src: '/img/atendimento-lupa.webp', w: 558, h: 586, alt: 'Adriana aplicando produto no rosto da paciente sob a luz da lupa', cap: 'Leitura da pele com lupa, antes de decidir qualquer etapa.' },
   { src: '/img/microagulhamento.webp', w: 558, h: 676, alt: 'Microagulhamento facial com caneta', cap: 'Microagulhamento: profundidade ajustada a cada região do rosto.' },
-  { src: '/img/antes-depois-acne.webp', w: 556, h: 746, alt: 'Comparação de textura de pele com marcas de acne, antes e depois', cap: 'Antes e depois publicado no perfil. Resultados variam de pessoa para pessoa.' },
+  { src: '/img/antes-depois-acne.webp', w: 556, h: 586, alt: 'Comparação de textura de pele com marcas de acne, antes e depois', cap: 'Antes e depois publicado no perfil. Resultados variam de pessoa para pessoa.' },
   { src: '/img/extracao.webp', w: 558, h: 676, alt: 'Extração de cravos com luvas durante limpeza de pele', cap: 'Extração feita com calma, poro por poro.' },
   { src: '/img/limpeza-de-pele.webp', w: 558, h: 586, alt: 'Paciente relaxada durante limpeza de pele', cap: 'Limpeza de pele, do começo ao calmante final.' },
   { src: '/img/ventosas.webp', w: 484, h: 474, alt: 'Ventosas preparadas para atendimento corporal', cap: 'Estética corporal com ventosaterapia.' },
@@ -102,10 +102,10 @@ const railStyle = computed(() => pinned.value ? { transform: `translate3d(${-pro
   transition: transform 0.8s var(--ease), box-shadow 0.8s var(--ease);
 }
 .card:hover .card-img {
-  transform: rotate(var(--r)) translateY(-6px);
-  box-shadow: 0 30px 50px -30px rgba(42, 32, 26, 0.5);
+  transform: translateY(-4px);
+  box-shadow: 0 24px 40px -28px rgba(42, 32, 26, 0.45);
 }
-.card:hover .card-img img { transform: scale(1.06); }
+.card:hover .card-img img { transform: scale(1.04); }
 .card figcaption {
   display: flex;
   gap: 0.8rem;
@@ -114,7 +114,7 @@ const railStyle = computed(() => pinned.value ? { transform: `translate3d(${-pro
   line-height: 1.5;
   color: var(--muted);
 }
-.card-num { color: var(--clay); font-size: 0.75rem; padding-top: 0.15rem; letter-spacing: 0.1em; }
+.card-num { color: var(--clay-deep); font-size: 0.75rem; padding-top: 0.15rem; letter-spacing: 0.1em; }
 
 .card--cta {
   aspect-ratio: 4 / 5;

@@ -38,7 +38,9 @@ summary::-webkit-details-marker { display: none; }
   line-height: 1.2;
   transition: color 0.3s, transform 0.5s var(--ease);
 }
-summary:hover .faq-q { color: var(--clay-deep); transform: translateX(6px); }
+summary:is(:hover, :focus-visible) .faq-q { color: var(--clay-deep); transform: translateX(6px); }
+summary:focus-visible { outline: none; }
+summary:focus-visible .faq-icon { box-shadow: inset 0 0 0 1px var(--clay-deep), 0 0 0 3px rgba(168, 114, 90, 0.25); }
 .faq-icon {
   flex: none;
   width: 42px; height: 42px;
