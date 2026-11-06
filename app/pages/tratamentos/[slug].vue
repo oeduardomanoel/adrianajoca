@@ -16,8 +16,6 @@ useSeoMeta({
   description: t.seoDescription,
   ogTitle: `${t.seoTitle} | Adriana Joca`,
   ogDescription: t.seoDescription,
-  ogImage: `${url}${t.image}`,
-  twitterImage: `${url}${t.image}`,
 })
 
 useHead({
