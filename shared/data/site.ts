@@ -12,7 +12,7 @@ export const site = {
 
   // WhatsApp só com números, com DDI e DDD. Ex.: '5547999998888'.
   // Enquanto estiver vazio, os botões de agendamento abrem o Direct do Instagram.
-  whatsapp: '',
+  whatsapp: '554799776097',
 
   instagram: 'adrianajoca.estetica',
   facebook: '', // URL completa da página, se quiser exibir
