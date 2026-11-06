@@ -32,7 +32,7 @@ A seção de depoimentos só aparece quando houver avaliações reais em `site.r
 
 ## Pendências antes de ir ao ar
 
-- [ ] Número do WhatsApp
+- [x] Número do WhatsApp (em `shared/data/site.ts`; confirme se falta o 9 depois do DDD)
 - [ ] Endereço completo e CEP (`site.address`) e coordenadas (`site.geo`)
 - [ ] Horário de atendimento (`site.hours`)
 - [ ] Trocar as fotos de `public/img/` pelas originais em alta resolução, com os mesmos nomes. As atuais foram recortadas dos prints do Instagram
